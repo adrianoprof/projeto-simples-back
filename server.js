@@ -1,10 +1,15 @@
-const express = require("express")
-const app = express()
+const express = require("express");
+const cors = require("cors");
+const app = express();
 const PORT = process.env.PORT || 5000
 
-app.use(cors({
-  origin: "https://projeto-simples-front.vercel.app"
-}))
+const corsOptions = {
+  origin: "https://projeto-simples-front.vercel.app",
+  methods: "GET,POST,PUT,DELETE",
+  allowedHeaders: "Content-Type,Authorization",
+};
+
+app.use(cors(corsOptions));
 
 app.get("/", (req, res) => {
   res.json({ message: "API funcionando com CI/CD no Render..." })
