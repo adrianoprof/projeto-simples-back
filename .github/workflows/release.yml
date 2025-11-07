@@ -1,63 +1,39 @@
-# -------------------------------------------------------------
-# NOME DO WORKFLOW
-# -------------------------------------------------------------
-# Este nome aparecerá na aba "Actions" do GitHub
-# quando o fluxo de trabalho for executado.
 name: Deploy Automático no Render via Tag
 
-# -------------------------------------------------------------
-# GATILHO (TRIGGER)
-# -------------------------------------------------------------
-# O workflow será executado sempre que uma nova tag
-# com o padrão SemVer for enviada (ex: v1.0.0, v1.1.2 etc.)
 on:
   push:
     tags:
       - 'v*.*.*'
 
-# -------------------------------------------------------------
-# DEFINIÇÃO DO JOB (tarefa principal)
-# -------------------------------------------------------------
 jobs:
   deploy:
-    # Define o ambiente de execução
     runs-on: ubuntu-latest
 
     steps:
-      # ---------------------------------------------------------
-      # BAIXAR O REPOSITÓRIO
-      # ---------------------------------------------------------
       - name: Checkout do repositório
         uses: actions/checkout@v3
-        # Clona o código do repositório dentro da VM
-        # para que os próximos comandos possam utilizá-lo
 
-      # ---------------------------------------------------------
-      # MOSTRAR A TAG DETECTADA
-      # ---------------------------------------------------------
-      - name: Exibir versão detectada
+      - name: Mostrar tag detectada
         run: echo "Iniciando deploy automático para a versão ${GITHUB_REF_NAME}"
 
-      # ---------------------------------------------------------
-      # DISPARAR REDEPLOY NO RENDER
-      # ---------------------------------------------------------
-      - name: Chamar API do Render com variável de versão
+      - name: Atualizar variável de ambiente no Render e disparar redeploy
         env:
-          # Segredos configurados no GitHub → Settings → Secrets → Actions
           RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
           SERVICE_ID: ${{ secrets.SERVICE_ID }}
-
-          # Variável interna do GitHub Actions que armazena o nome da tag (ex: v1.0.0)
           VERSION_TAG: ${{ github.ref_name }}
         run: |
-          echo "Iniciando redeploy no Render com versão ${VERSION_TAG}..."
+          echo "Atualizando variável APP_VERSION no Render para ${VERSION_TAG}..."
+          curl -X PATCH "https://api.render.com/v1/services/${SERVICE_ID}/env-vars" \
+            -H "Accept: application/json" \
+            -H "Authorization: Bearer ${RENDER_API_KEY}" \
+            -H "Content-Type: application/json" \
+            -d "[{\"key\": \"APP_VERSION\", \"value\": \"${VERSION_TAG}\"}]"
 
-          # Faz uma chamada HTTP POST à API oficial do Render
-          # enviando uma variável de ambiente (APP_VERSION)
+          echo "Disparando novo deploy..."
           curl -X POST "https://api.render.com/v1/services/${SERVICE_ID}/deploys" \
             -H "Accept: application/json" \
             -H "Authorization: Bearer ${RENDER_API_KEY}" \
             -H "Content-Type: application/json" \
-            -d "{\"envVars\": [{\"key\": \"APP_VERSION\", \"value\": \"${VERSION_TAG}\"}]}"
+            -d '{}'
 
-          echo "Deploy disparado com sucesso no Render para a versão ${VERSION_TAG}!"
+          echo "Deploy disparado com sucesso no Render!"
