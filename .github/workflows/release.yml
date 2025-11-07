@@ -28,6 +28,8 @@ jobs:
             -H "Authorization: Bearer ${RENDER_API_KEY}" \
             -H "Content-Type: application/json" \
             -d "[{\"key\": \"APP_VERSION\", \"value\": \"${VERSION_TAG}\"}]"
+          echo "Aguardando 10 segundos para a variável propagar..."
+          sleep 10
 
           echo "Disparando novo deploy..."
           curl -X POST "https://api.render.com/v1/services/${SERVICE_ID}/deploys" \
