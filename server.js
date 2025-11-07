@@ -21,7 +21,7 @@ app.use(cors(corsOptions));
 app.get("/", (req, res) => {
   const versao = process.env.APP_VERSION || "sem versão (Render não atualizou ainda)";
   res.json({
-    message: "API publicada automaticamente com CI/CD via Render",
+    message: "API publicada automaticamente com CI/CD via Render ... AOBA",
     versao
   });
 });
