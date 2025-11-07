@@ -11,10 +11,18 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 
+// app.get("/", (req, res) => {
+//   res.json({
+//     message: "API publicada automaticamente com CI/CD via Render",
+//     versao: process.env.APP_VERSION
+//   });
+// });
+
 app.get("/", (req, res) => {
+  const versao = process.env.APP_VERSION || "sem versão (Render não atualizou ainda)";
   res.json({
     message: "API publicada automaticamente com CI/CD via Render",
-    versao: process.env.APP_VERSION
+    versao
   });
 });
 
