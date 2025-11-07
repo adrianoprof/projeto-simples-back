@@ -12,7 +12,10 @@ const corsOptions = {
 app.use(cors(corsOptions));
 
 app.get("/", (req, res) => {
-  res.json({ message: "API PUBLICADA COM CI/CD", versao: process.env.VERSION });
+  res.json({
+    message: "API publicada automaticamente com CI/CD via Render",
+    versao: process.env.APP_VERSION
+  });
 });
 
 app.listen(PORT, () => {
