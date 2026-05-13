@@ -12,7 +12,7 @@ const corsOptions = {
 app.use(cors(corsOptions));
 
 app.get("/", (req, res) => {
-  res.json({ message: "Nova versão publicada automaticamente via GitHub Actions!" })
+  res.json({ message: "Nova versão 12/05/2026" })
 })
 
 app.listen(PORT, () => {
